@@ -393,6 +393,7 @@
             </activation>
             <modules>
                 <module>amqp-spring-boot-3-integrationtests</module>
+                <module>amqp-spring-boot-4-integrationtests</module>
             </modules>
         </profile>
 
