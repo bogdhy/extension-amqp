@@ -30,7 +30,6 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -48,7 +47,13 @@ import org.springframework.context.annotation.Bean;
 @AutoConfiguration
 @ConditionalOnClass(SpringAMQPPublisher.class)
 @EnableConfigurationProperties(AMQPProperties.class)
-@AutoConfigureAfter({RabbitAutoConfiguration.class, AxonAutoConfiguration.class, InfraConfiguration.class})
+@AutoConfigureAfter(
+        value = {AxonAutoConfiguration.class, InfraConfiguration.class},
+        name = {
+                "org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration",
+                "org.springframework.boot.amqp.autoconfigure.RabbitAutoConfiguration"
+        }
+)
 public class AMQPAutoConfiguration {
 
     private final AMQPProperties amqpProperties;
@@ -69,10 +74,10 @@ public class AMQPAutoConfiguration {
     public AMQPMessageConverter amqpMessageConverter(@Qualifier("eventSerializer") Serializer eventSerializer,
                                                      RoutingKeyResolver routingKeyResolver) {
         return DefaultAMQPMessageConverter.builder()
-                                          .serializer(eventSerializer)
-                                          .routingKeyResolver(routingKeyResolver)
-                                          .durable(amqpProperties.isDurableMessages())
-                                          .build();
+                .serializer(eventSerializer)
+                .routingKeyResolver(routingKeyResolver)
+                .durable(amqpProperties.isDurableMessages())
+                .build();
     }
 
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
